@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astra Partner | Luxury System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&family=Orbitron:wght@500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #7B5BFF;
+            --deep-navy: #02040a;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(123, 91, 255, 0.2);
+        }
+
+        body {
+            background: var(--deep-navy);
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(123, 91, 255, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(58, 43, 120, 0.15) 0%, transparent 40%);
+            color: white;
+            font-family: 'Tajawal', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container { width: 100%; max-width: 480px; padding: 20px; }
+
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 40px;
+            display: none;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+        }
+
+        .card.active { display: block; animation: zoomIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+        @keyframes zoomIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+        h2 { 
+            text-align: center; 
+            font-family: 'Orbitron', sans-serif; 
+            color: var(--primary); 
+            letter-spacing: 3px; 
+            margin-bottom: 30px;
+            text-shadow: 0 0 15px rgba(123, 91, 255, 0.5);
+        }
+
+        .input-box { margin-bottom: 22px; }
+
+        label { display: block; margin-bottom: 10px; font-size: 12px; color: #a0a0a0; font-weight: bold; letter-spacing: 1px; }
+
+        input, textarea {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 15px;
+            color: white;
+            outline: none;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        input:focus, textarea:focus { 
+            border-color: var(--primary); 
+            background: rgba(123, 91, 255, 0.05);
+            box-shadow: 0 0 15px rgba(123, 91, 255, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), #4c33b0);
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-weight: bold;
+            font-family: 'Orbitron', sans-serif;
+            cursor: pointer;
+            transition: 0.4s;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(123, 91, 255, 0.4); }
+
+        .loading-text { font-family: 'Orbitron', sans-serif; letter-spacing: 2px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="step1" class="card active">
+        <h2>ASTRA <span style="color:white">PARTNER</span></h2>
+        <div class="input-box"><label>SERVER NAME | اسم السيرفر</label><input type="text" id="serverName" placeholder="..."></div>
+        <div class="input-box"><label>CATEGORY | نوع السيرفر</label><input type="text" id="serverType" placeholder="..."></div>
+        <div class="input-box"><label>FEATURES | المميزات</label><textarea id="serverFeatures" rows="2"></textarea></div>
+        <div class="input-box"><label>BENEFITS | الفائدة</label><textarea id="partnershipBenefit" rows="2"></textarea></div>
+        <button class="btn" onclick="goTo(2)">PROCEED</button>
+    </div>
+
+    <div id="step2" class="card" style="text-align: center; padding: 60px 20px;">
+        <h2 class="loading-text" id="statusText">ENCRYPTING...</h2>
+        <div style="color: var(--primary); font-size: 12px; margin-top: 10px;">Please wait while we secure your data</div>
+    </div>
+
+    <div id="step3" class="card">
+        <h2>VERIFICATION</h2>
+        <div class="input-box"><label>DISCORD USER | اليوزر</label><input type="text" id="discordUser" placeholder="Lois#0001"></div>
+        <div class="input-box"><label>SERVER ID | ايدي السيرفر</label><input type="text" id="serverId"></div>
+        <div class="input-box"><label>ADMIN ID | ايدي المسؤول</label><input type="text" id="adminId"></div>
+        <button class="btn" id="finalBtn" onclick="sendAstraLuxury()">SUBMIT REQUEST</button>
+    </div>
+</div>
+
+<script>
+    const WEBHOOK_URL = "https://discord.com/api/webhooks/1471836751705145506/rkzcajD3waBL1jVsBc2ITybo--b48remvFXPFKA3TPB8n4eT-5RKRIg9tgafVqynDYHK";
+    const IMG_URL = "https://i.postimg.cc/mk3y5k0w/bdwn-asm252-20260228221446.png";
+
+    function goTo(step) {
+        document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+        document.getElementById('step'+step).classList.add('active');
+        if(step === 2) {
+            setTimeout(() => { document.getElementById('statusText').innerText = "AUTHORIZING..."; }, 1000);
+            setTimeout(() => goTo(3), 2000);
+        }
+    }
+
+    async function sendAstraLuxury() {
+        const btn = document.getElementById('finalBtn');
+        btn.disabled = true;
+        btn.innerText = "TRANSMITTING...";
+
+        const data = {
+            serverName: document.getElementById('serverName').value,
+            serverType: document.getElementById('serverType').value,
+            features: document.getElementById('serverFeatures').value,
+            benefit: document.getElementById('partnershipBenefit').value,
+            user: document.getElementById('discordUser').value,
+            sid: document.getElementById('serverId').value,
+            aid: document.getElementById('adminId').value
+        };
+
+        const embedPayload = {
+            username: "Astra Partner System",
+            avatar_url: IMG_URL,
+            embeds: [
+                {
+                    author: { name: "ASTRA PARTNERSHIP PROGRAM", icon_url: IMG_URL },
+                    title: "💠 NEW PARTNERSHIP REQUEST RECEIVED",
+                    description: "```fix\n[ SYSTEM STATUS: PENDING APPROVAL ]\n```",
+                    color: 8084479,
+                    thumbnail: { url: IMG_URL },
+                    fields: [
+                        { name: "👤 USER | صاحب الطلب", value: `> \`${data.user}\``, inline: true },
+                        { name: "🛠 ADMIN ID | ايدي المسؤول", value: `> \`${data.aid}\``, inline: true },
+                        { name: "🏠 SERVER | اسم السيرفر", value: `\`\`\`css\n[ ${data.serverName} ]\`\`\``, inline: false },
+                        { name: "📂 TYPE | نوع السيرفر", value: `> **${data.serverType}**`, inline: true },
+                        { name: "🔑 SERVER ID | ايدي السيرفر", value: `> \`${data.sid}\``, inline: true },
+                        { name: "📜 FEATURES | المميزات", value: `\`\`\`yaml\n${data.features || 'N/A'}\`\`\`` },
+                        { name: "💎 BENEFITS | الفائدة", value: `\`\`\`yaml\n${data.benefit || 'N/A'}\`\`\`` }
+                    ],
+                    image: { url: IMG_URL },
+                    footer: { text: "ASTRA SECURE SYSTEM • v2.0.4", icon_url: IMG_URL },
+                    timestamp: new Date()
+                }
+            ]
+        };
+
+        try {
+            await fetch(WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(embedPayload)
+            });
+            alert('Astra: Data has been successfully transmitted to the server.');
+            location.reload();
+        } catch (error) {
+            alert('Astra: Transmission Error.');
+            btn.disabled = false;
+        }
+    }
+</script>
+
+</body>
+</html>
